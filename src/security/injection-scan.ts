@@ -29,8 +29,8 @@ const INJECTION_PATTERNS: InjectionPattern[] = [
   },
   {
     name: 'tool-directive',
-    // Match actionable tool/shell directives, not prose about game controls.
-    re: /\b(?:call|invoke|execute|run|use)\s+(?:(?:the|a)\s+)?(?:[a-z][a-z0-9]*_[a-z0-9_]+\b|(?:shell|terminal|bash)\s+command\b|(?:tool|function)\s+(?:named\s+)?(?:[\x60"'][a-z][a-z0-9_.-]*[\x60"']|[a-z][a-z0-9]*_[a-z0-9_]+\b|[a-z][a-z0-9_.-]*\s*\())/i,
+    // Require explicit tool/function or shell context; event names are ordinary data.
+    re: /\b(?:call|invoke|execute|run|use)\s+(?:(?:the|a)\s+)?(?:(?:shell|terminal|bash)\s+command\b|(?:tool|function)\s+(?:named\s+)?(?:[\x60"'][a-z][a-z0-9_.-]*[\x60"']|[a-z][a-z0-9]*_[a-z0-9_]+\b|[a-z][a-z0-9_.-]*\s*\())/i,
   },
   {
     name: 'override-instructions',
