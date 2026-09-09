@@ -10,9 +10,10 @@
  *   into a structured MCP tool result with `isError: true`. This is how the
  *   agent learns about 401/403/404/429 without crashing the connection.
  *   Importantly, 403 + `requiredScope: 'management'` (the "you wired an
- *   ingest key" case) is surfaced verbatim so the agent can tell the user
+ *   ingest key" case) is sanitized before being surfaced so the agent can tell the user
  *   what's wrong.
  */
+import { untrustedJsonContent } from '../security/model-data.js'
 import { PlayloopApiError, PlayloopNetworkError } from '../client.js'
 
 export type McpToolResult = {
@@ -21,14 +22,7 @@ export type McpToolResult = {
 }
 
 export function jsonContent(data: unknown): McpToolResult {
-  return {
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify(data, null, 2),
-      },
-    ],
-  }
+  return untrustedJsonContent(data)
 }
 
 /**
@@ -48,45 +42,13 @@ export async function readOnlyWriteStub(): Promise<McpToolResult> {
 }
 
 export function errorContent(err: unknown): McpToolResult {
+  let data: unknown
   if (err instanceof PlayloopApiError) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(
-            {
-              ...err.body,
-              error: err.message,
-              status: err.status,
-            },
-            null,
-            2,
-          ),
-        },
-      ],
-    }
+    data = { ...err.body, error: err.message, status: err.status }
+  } else if (err instanceof PlayloopNetworkError) {
+    data = { error: 'network error', message: err.message }
+  } else {
+    data = { error: 'unknown error', message: err instanceof Error ? err.message : String(err) }
   }
-  if (err instanceof PlayloopNetworkError) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(
-            { error: 'network error', message: err.message },
-            null,
-            2,
-          ),
-        },
-      ],
-    }
-  }
-  const message = err instanceof Error ? err.message : String(err)
-  return {
-    isError: true,
-    content: [
-      { type: 'text', text: JSON.stringify({ error: 'unknown error', message }, null, 2) },
-    ],
-  }
+  return { ...jsonContent(data), isError: true }
 }

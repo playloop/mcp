@@ -15,6 +15,8 @@
  * the URI (env, build) because resources are meant to be stable references;
  * filtered queries belong to tool calls.
  */
+import { jsonContent, errorContent } from '../tools/_shared.js'
+import { untrustedResourceContent } from '../security/model-data.js'
 import { ResourceTemplate, type McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { GameDetail, SessionDetailResponse, BuildSummary } from '../types.js'
@@ -30,15 +32,11 @@ export function registerResources(server: McpServer, client: PlayloopClient): vo
     },
     async (uri, variables) => {
       const id = String(variables['id'])
-      const data = await client.get<GameDetail>(`/api/v1/games/${encodeURIComponent(id)}`)
-      return {
-        contents: [
-          {
-            uri: uri.toString(),
-            mimeType: 'application/json',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
+      try {
+        const data = await client.get<GameDetail>(`/api/v1/games/${encodeURIComponent(id)}`)
+        return untrustedResourceContent(uri, jsonContent(data))
+      } catch (err) {
+        return untrustedResourceContent(uri, errorContent(err))
       }
     },
   )
@@ -53,17 +51,13 @@ export function registerResources(server: McpServer, client: PlayloopClient): vo
     },
     async (uri, variables) => {
       const id = String(variables['id'])
-      const data = await client.get<SessionDetailResponse>(
-        `/api/v1/sessions/${encodeURIComponent(id)}`,
-      )
-      return {
-        contents: [
-          {
-            uri: uri.toString(),
-            mimeType: 'application/json',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
+      try {
+        const data = await client.get<SessionDetailResponse>(
+          `/api/v1/sessions/${encodeURIComponent(id)}`,
+        )
+        return untrustedResourceContent(uri, jsonContent(data))
+      } catch (err) {
+        return untrustedResourceContent(uri, errorContent(err))
       }
     },
   )
@@ -79,17 +73,13 @@ export function registerResources(server: McpServer, client: PlayloopClient): vo
     async (uri, variables) => {
       const game = String(variables['game'])
       const version = String(variables['version'])
-      const data = await client.get<BuildSummary>(
-        `/api/v1/builds/${encodeURIComponent(game)}/${encodeURIComponent(version)}`,
-      )
-      return {
-        contents: [
-          {
-            uri: uri.toString(),
-            mimeType: 'application/json',
-            text: JSON.stringify(data, null, 2),
-          },
-        ],
+      try {
+        const data = await client.get<BuildSummary>(
+          `/api/v1/builds/${encodeURIComponent(game)}/${encodeURIComponent(version)}`,
+        )
+        return untrustedResourceContent(uri, jsonContent(data))
+      } catch (err) {
+        return untrustedResourceContent(uri, errorContent(err))
       }
     },
   )
