@@ -1,3 +1,5 @@
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { describe, expect, it } from 'vitest'
 import { createPlayloopMcpServer } from '../src/server.js'
 
@@ -46,9 +48,31 @@ describe('untrusted tool and resource data', () => {
       expect(result.contents[1]!.text).toContain('untrusted')
     })
     it(`protects ${name} resource errors`, async () => {
-      const result = await server({ error: attack }, 403)._registeredResourceTemplates[name]!.readCallback(new URL('playloop://sessions/s_1'), { id: 's_1', game: 'g_1', version: '1.0' })
-      expect(JSON.stringify(result)).not.toContain('<think>')
-      expect(JSON.parse(result.contents[0]!.text).status).toBe(403)
+      const read = server({ error: attack }, 403)._registeredResourceTemplates[name]!.readCallback(new URL('playloop://sessions/s_1'), { id: 's_1', game: 'g_1', version: '1.0' })
+      await expect(read).rejects.toThrow('"status": 403')
+      await expect(read).rejects.toThrow('[Text withheld: instruction-like content]')
+      await expect(read).rejects.toThrow('untrusted')
+      await expect(read).rejects.not.toThrow('<think>')
     })
+  }
+})
+
+// Exercise the protocol boundary too: callers must see rejection, not resource data.
+it('reports sanitized resource failures through the MCP client', async () => {
+  const mcp = createPlayloopMcpServer({ apiKey: 'test', baseUrl: 'https://example.test',
+    fetchImpl: async () => new Response(JSON.stringify({ error: attack }), { status: 403 }),
+  })
+  const client = new Client({ name: 'resource-test', version: '1.0.0' })
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
+  try {
+    await mcp.connect(serverTransport)
+    await client.connect(clientTransport)
+    const read = client.readResource({ uri: 'playloop://games/g_1' })
+    await expect(read).rejects.toThrow('"status": 403')
+    await expect(read).rejects.toThrow('[Text withheld: instruction-like content]')
+    await expect(read).rejects.not.toThrow('<think>')
+  } finally {
+    await client.close()
+    await mcp.close()
   }
 })

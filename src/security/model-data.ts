@@ -36,8 +36,11 @@ export function untrustedJsonContent(data: unknown) {
   }
 }
 
-/** The first resource remains JSON with its original shape; the second labels its trust. */
-export function untrustedResourceContent(uri: URL, result: ReturnType<typeof untrustedJsonContent>) {
+/** Preserve resource JSON and trust labels; reject failed reads using sanitized content only. */
+export function untrustedResourceContent(uri: URL, result: ReturnType<typeof untrustedJsonContent> & { isError?: boolean }) {
+  // Resource reads have no isError result flag. Throw so the protocol reports
+  // failure, retaining the safe diagnostics and trust notice from errorContent.
+  if (result.isError) throw new Error(result.content.map(block => block.text).join('\n'))
   return {
     contents: result.content.map((block, index) => ({
       uri: index === 0 ? uri.toString() : `${uri.toString()}#data-trust`,
