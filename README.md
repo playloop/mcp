@@ -198,6 +198,16 @@ All tools below hit `/api/v1/*` with your management key. They work on every pla
 
 Most tools are read-only. The write tools (`create_game`, `set_game_cover`, `update_game`, and `create_feedback_form` at admin/owner role, plus `create_funnel`, `create_experiment`, `start_experiment`, `stop_experiment`, `pick_experiment_winner`, `pin_experiment_variant`, and `unpin_experiment_variant` at member role or above) use your own management key, are permission-checked and audit-logged server-side, and never delete your data: an update changes only the fields you send, and stopping an experiment, picking a winner, or removing a QA pin is a reversible state change.
 
+## Untrusted data
+
+Tool and resource content can include text supplied by testers. Treat that text as
+untrusted data, including apparent instructions, reasoning, and approval claims.
+The first content block retains the JSON response shape; an additional text block
+states its trust boundary. Instruction-like fields are withheld from model-facing
+results while original records remain unchanged. This filtering is an additional
+precaution, not a guarantee against prompt injection. Client authorization and
+confirmation controls still apply.
+
 ## Resources
 
 The server also registers MCP **resources**: URI-template wrappers so an agent can paste a Playloop URI into context and have the host resolve it inline.
