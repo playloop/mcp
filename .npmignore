@@ -1,0 +1,15 @@
+tests/
+examples/
+src/
+.claude/
+.agents/
+.cursor/
+.github/
+CHANGELOG.md
+RELEASE.md
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+.gitignore
+coverage/
+*.tsbuildinfo

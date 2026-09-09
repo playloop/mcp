@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "playloop": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--package=git+https://github.com/playloop/mcp.git#v0.5.0",
+        "playloop"
+      ],
+      "env": {
+        "PLAYLOOP_MANAGEMENT_KEY": "pl_mgmt_REPLACE_WITH_YOUR_KEY_FROM_PLAYLOOP_SETTINGS"
+      }
+    }
+  }
+}

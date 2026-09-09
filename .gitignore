@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+.env
+.env.local
+.DS_Store
+*.log
+.turbo
+.vitest-cache
+
+# stray agent worktree dirs
+.wt-*/
+
+# Machine-local denylist for the .githooks content gate (never commit).
+.githooks/denylist.local
