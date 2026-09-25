@@ -134,7 +134,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     {
       title: 'Get activity',
       description:
-        "Volume over a window: players + sessions in the last N days vs the prior N days (for a trend), plus peak concurrency and who's online now. Answers 'how many people played this week / are my numbers growing?' Returns `{ game, windowDays, onlineNow, peakConcurrent, current, previous }`.",
+        "Volume over a window: players + sessions in the last N days vs the prior N days (for a trend), plus peak concurrency and who's online now. Answers 'how many people played this week / are my numbers growing?' `byDistribution` splits both windows by where each session was played (e.g. `itch-web`, `web-other`, or a build's own value such as `steam`; `unknown` when not recorded), answering 'how many players came from itch vs my site vs Steam?' Returns `{ game, windowDays, onlineNow, peakConcurrent, current, previous, byDistribution }`.",
       inputSchema: {
         game: z.string().min(1).describe('Game id, slug, or exact name.'),
         days: z.number().int().min(1).max(90).optional().describe('Window length in days (default 7).'),
