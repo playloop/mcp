@@ -10,7 +10,7 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { GamesListResponse, GameDetail, CreateGameResponse } from '../types.js'
-import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS, WRITE_TOOL_ANNOTATIONS } from './_shared.js'
 
 // Mirrors the platform repo's lib/games/genres.ts GENRES + actions.ts engines.
 const GENRES = [
@@ -84,7 +84,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'create_game',
     {
       title: 'Create game',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      annotations: WRITE_TOOL_ANNOTATIONS,
       description:
         "Create a new game in the active workspace. Requires an ADMIN or OWNER role (members/viewers get 403). Returns 201 `{ game, ingestKey }`, `ingestKey` is the show-once write-only telemetry key to embed in the SDK (also visible later on the game's Connections page). The URL slug is derived from the name automatically.",
       inputSchema: {

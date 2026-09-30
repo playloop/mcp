@@ -22,7 +22,13 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
+import {
+  jsonContent,
+  errorContent,
+  IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
+  READ_ONLY_TOOL_ANNOTATIONS,
+  WRITE_TOOL_ANNOTATIONS,
+} from './_shared.js'
 
 const EXPERIMENT_VARIANT = z.object({
   key: z
@@ -97,7 +103,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'create_experiment',
     {
       title: 'Create experiment',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      annotations: WRITE_TOOL_ANNOTATIONS,
       description:
         "Create a DRAFT A/B experiment for a game. Requires a member, admin, or owner role (viewers get 403). Variants need 2\u20138 entries; allocations are relative weights \u2014 if they don't sum to 100 the API returns 409 `allocations_need_normalization` with the normalized weights, and you re-submit with `acknowledgeNormalization: true` to confirm. The experiment starts in `draft` (players are NOT assigned yet) \u2014 call `start_experiment` to go live. Returns 201 `{ experiment }`.",
       inputSchema: {
@@ -154,7 +160,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'start_experiment',
     {
       title: 'Start experiment',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
       description:
         'Start a DRAFT experiment (draft \u2192 running). Starting locks the variants, allocations, and audience; players begin getting assigned. 409 if the experiment is already running or was stopped (resume a stopped experiment from the dashboard). Requires a member, admin, or owner role. Returns `{ experiment }`.',
       inputSchema: {
@@ -178,7 +184,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'stop_experiment',
     {
       title: 'Stop experiment',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
       description:
         'Stop a RUNNING experiment (running \u2192 stopped). Players stop getting assigned; all collected data stays intact (this is a reversible state transition, not a delete). 409 on any other status. Requires a member, admin, or owner role. Returns `{ experiment }`.',
       inputSchema: {
@@ -202,7 +208,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'pick_experiment_winner',
     {
       title: 'Pick experiment winner',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
       description:
         "Set, change, or unset (pass null) the winner variant of a RUNNING or STOPPED experiment. 409 on a draft (no data yet); 400 when the key doesn't match one of the experiment's variants. Reversible \u2014 picking a winner records the decision, it doesn't delete anything. Requires a member, admin, or owner role. Returns `{ experiment }`.",
       inputSchema: {
@@ -229,7 +235,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'pin_experiment_variant',
     {
       title: 'Pin a device to a variant (QA)',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
       description:
         "QA pinning: force a specific device into a specific variant of an experiment, bypassing the normal split and any audience/new-players filters. Use it to feel-test each arm on the dev's own machine. Re-pinning an already-pinned device swaps its variant. Works on any status (pin before starting to guarantee the first assignment). 400 when the variant key doesn't exist; 409 at the per-experiment pin limit. Requires a member, admin, or owner role. Returns `{ overrides }`: the experiment's full current pin list.",
       inputSchema: {
@@ -256,7 +262,7 @@ export function registerExperimentsTools(server: McpServer, client: PlayloopClie
     'unpin_experiment_variant',
     {
       title: 'Remove a QA variant pin',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: IDEMPOTENT_WRITE_TOOL_ANNOTATIONS,
       description:
         "Remove a QA pin so the device goes back to normal bucketed assignment on its next variant-map fetch. 404 when no pin exists for that device. Requires a member, admin, or owner role. Returns `{ overrides }`: the experiment's remaining pin list.",
       inputSchema: {

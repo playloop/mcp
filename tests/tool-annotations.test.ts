@@ -14,8 +14,15 @@ import { createPlayloopMcpServer, MCP_WRITE_TOOLS } from '../src/server.js'
  * - file_feature_request: records feedback for the Playloop team.
  * - suggest_fixes, get_fix_first: can generate fresh AI analysis, which can
  *   use the workspace's AI credits.
+ * - list_tester_archetypes: groups and labels testers with AI on every call,
+ *   using the workspace's own AI provider key.
  */
-const NON_WRITE_SIDE_EFFECT_TOOLS = ['file_feature_request', 'suggest_fixes', 'get_fix_first']
+const NON_WRITE_SIDE_EFFECT_TOOLS = [
+  'file_feature_request',
+  'suggest_fixes',
+  'get_fix_first',
+  'list_tester_archetypes',
+]
 
 /** Tools that replace or clear data the user cannot restore through Playloop. */
 const DESTRUCTIVE_TOOLS = ['set_game_cover', 'update_game']

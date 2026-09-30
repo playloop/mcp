@@ -16,7 +16,7 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent, AI_GENERATION_TOOL_ANNOTATIONS, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
+import { jsonContent, errorContent, AI_GENERATION_TOOL_ANNOTATIONS, READ_ONLY_TOOL_ANNOTATIONS, WRITE_TOOL_ANNOTATIONS } from './_shared.js'
 
 const ENV_SCHEMA = z
   .string()
@@ -123,7 +123,7 @@ export function registerTesterArchetypesTool(
     'list_tester_archetypes',
     {
       title: 'List tester archetypes',
-      annotations: READ_ONLY_TOOL_ANNOTATIONS,
+      annotations: AI_GENERATION_TOOL_ANNOTATIONS,
       description:
         "Group the game's testers into behavior archetypes based on their per-tester narrative summaries. Returns `{ archetypes, testerCount, reason?, modelId? }`. Always returns a result object, empty `archetypes` + populated `reason` (`requires_byo_key` / `insufficient_data` / `api_error`) when clustering couldn't run. Each archetype has an AI-generated label (or `Cluster N` fallback), representative testers (with summary excerpts), common friction tags, and avg session count / playtime minutes.",
       inputSchema: {
@@ -173,7 +173,7 @@ export function registerFeedbackFormsTool(server: McpServer, client: PlayloopCli
     'create_feedback_form',
     {
       title: 'Create feedback form',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      annotations: WRITE_TOOL_ANNOTATIONS,
       description:
         "Create a Player Feedback form for a game (the multi-field forms the SDK surfaces in your game via `feedback.open` / `feedback.submit`). Requires an ADMIN or OWNER role (members/viewers get 403). Give the form a title and 1-20 fields; each field needs a unique id (answers are keyed by it), a label, and a kind (`rating-1-5`, `short-text`, `yes-no`, or `long-text`), with optional required/placeholder/helpText. Optional triggerHint notes where the game should show the form; active defaults to true. Set allowRepeatSubmissions to true only for repeat voluntary notes; the default is false. Returns `{ form }`.",
       inputSchema: {

@@ -12,7 +12,7 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS, WRITE_TOOL_ANNOTATIONS } from './_shared.js'
 
 const FUNNEL_STEP = z.object({
   id: z.string().min(1).max(64).describe('Stable step id, unique within the funnel.'),
@@ -142,7 +142,7 @@ export function registerFunnelsTools(server: McpServer, client: PlayloopClient):
     'create_funnel',
     {
       title: 'Create funnel',
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      annotations: WRITE_TOOL_ANNOTATIONS,
       description:
         "Create a conversion funnel for a game. Requires a member, admin, or owner role (viewers get 403). Define 2\u201320 ordered `steps` (each matching one telemetry event, optionally property-filtered), pick the `mode` (`ordered` = steps must fire in sequence, default / `any-order` = set membership) and `scopeMode` (`events` counts event flows, default / `players` counts unique players). Results compute from the game's EXISTING telemetry \u2014 no SDK change needed. Fetch the numbers afterwards with `get_funnel_result`. Returns 201 `{ funnel }`.",
       inputSchema: {

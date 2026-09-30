@@ -25,8 +25,8 @@ export type McpToolResult = {
 /**
  * Tool annotations. Every tool declares all four MCP behaviour hints
  * explicitly: connector directories require them, and an omitted hint defaults
- * to the worst case (destructive, open-world). Write tools carry an inline
- * object at their registration so the call site shows the behaviour.
+ * to the worst case (destructive, open-world). The destructive tools carry an
+ * inline object at their registration so the call site shows it.
  */
 
 /** A pure read: no side effects, safe to repeat, limited to your Playloop data. */
@@ -38,14 +38,34 @@ export const READ_ONLY_TOOL_ANNOTATIONS: ToolAnnotations = {
 }
 
 /**
- * Reads that may generate fresh AI analysis (`suggest_fixes`, `get_fix_first`).
- * Not read-only, because a new generation can use your workspace's AI credits.
- * Nothing is deleted or overwritten, and a repeat call may generate again.
+ * Reads that generate fresh AI analysis (`suggest_fixes`, `get_fix_first`,
+ * `list_tester_archetypes`). Not read-only, because a new generation uses your
+ * workspace's AI credits or your own AI provider key. Nothing is deleted or
+ * overwritten, and a repeat call generates again.
  */
 export const AI_GENERATION_TOOL_ANNOTATIONS: ToolAnnotations = {
   readOnlyHint: false,
   destructiveHint: false,
   idempotentHint: false,
+  openWorldHint: false,
+}
+
+/** An additive write (create or file): each call adds a new record. */
+export const WRITE_TOOL_ANNOTATIONS: ToolAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: false,
+}
+
+/**
+ * A reversible state change where repeating the same call changes nothing
+ * further (starting twice is refused, the same pin or winner is a no-op).
+ */
+export const IDEMPOTENT_WRITE_TOOL_ANNOTATIONS: ToolAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: true,
   openWorldHint: false,
 }
 
