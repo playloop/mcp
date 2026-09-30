@@ -29,6 +29,13 @@ export interface Game {
   [key: string]: unknown
 }
 
+/** The short `{ id, slug, name }` game reference most per-game reads return. */
+export interface GameRef {
+  id: string
+  name: string
+  slug: string
+}
+
 export interface GameCounts {
   sessionCount: number
   buildCount: number
@@ -178,12 +185,12 @@ export interface PlaytestBatch {
 }
 
 export interface PlaytestBatchListResponse {
-  game: Game
+  game: GameRef
   batches: PlaytestBatch[]
 }
 
 export interface PlaytestBatchDetailResponse {
-  game: Game
+  game: GameRef
   batch: PlaytestBatch
 }
 
@@ -251,7 +258,7 @@ export interface PlaytestHandle {
 }
 
 export interface PlaytestHandlesResponse {
-  game: Game
+  game: GameRef
   handles: PlaytestHandle[]
   hasMore: boolean
   total: number
