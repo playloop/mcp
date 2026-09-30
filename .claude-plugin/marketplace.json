@@ -1,0 +1,17 @@
+{
+  "name": "playloop",
+  "owner": {
+    "name": "Playloop",
+    "url": "https://playloop.gg"
+  },
+  "description": "Playloop plugins for Claude Code.",
+  "plugins": [
+    {
+      "name": "playloop",
+      "source": "./claude-plugin",
+      "description": "Ask Claude about your Playloop playtest data: sessions, insights, crashes, feedback, builds and funnels.",
+      "category": "productivity",
+      "tags": ["playtesting", "game-development", "analytics", "mcp"]
+    }
+  ]
+}

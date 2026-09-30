@@ -43,7 +43,16 @@ Restart your client. The Playloop tools should appear in the tool picker.
 
 ### Claude Code
 
-Use the same `mcpServers` block in your project's `.mcp.json`. Keep the management key in your local configuration and do not commit it.
+The Playloop plugin is the quickest way. It connects to the hosted server, so there is nothing to build, and it adds a skill that tells Claude which tool answers which question. In Claude Code, run:
+
+```
+/plugin marketplace add playloop/mcp
+/plugin install playloop@playloop
+```
+
+Claude Code asks for your management key when you install. It is stored in your system's secure credential store, not in a settings file. To change it later, run `/plugin configure playloop`.
+
+To run the server locally instead, use the same `mcpServers` block as Claude Desktop in your project's `.mcp.json`. Keep the management key in your local configuration and do not commit it.
 
 ### Cursor
 

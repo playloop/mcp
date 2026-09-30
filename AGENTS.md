@@ -30,7 +30,7 @@ MCP client config with a management key (see [Authentication](#authentication)).
 }
 ```
 
-**Claude Code:** use the same block in a project-level `.mcp.json`; do not commit your management key.
+**Claude Code:** install the Playloop plugin (`/plugin marketplace add playloop/mcp`, then `/plugin install playloop@playloop`). It connects to the hosted server and asks for the management key on install. Or use the same block as above in a project-level `.mcp.json`; do not commit your management key.
 
 **Cursor**, `~/.cursor/mcp.json` (or project-level `.cursor/mcp.json`): same
 `mcpServers` block as above.
