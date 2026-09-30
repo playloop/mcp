@@ -1,0 +1,32 @@
+{
+  "name": "playloop",
+  "displayName": "Playloop",
+  "version": "0.5.0",
+  "description": "Ask Claude about your Playloop playtest data: sessions, insights, crashes, feedback, builds and funnels.",
+  "author": {
+    "name": "Playloop",
+    "url": "https://playloop.gg"
+  },
+  "homepage": "https://playloop.gg/docs/mcp",
+  "repository": "https://github.com/playloop/mcp",
+  "license": "MIT",
+  "keywords": ["playtesting", "game-development", "analytics", "mcp", "unity", "unreal", "godot"],
+  "userConfig": {
+    "management_key": {
+      "type": "string",
+      "title": "Playloop management key",
+      "description": "Starts with pl_mgmt_. Create one in Playloop under Settings > Workspace > API key. It is scoped to one workspace and acts at your role there.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "playloop": {
+      "type": "http",
+      "url": "https://playloop.gg/api/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer ${user_config.management_key}"
+      }
+    }
+  }
+}
