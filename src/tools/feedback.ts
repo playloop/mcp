@@ -8,13 +8,14 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerFeedbackTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'list_feedback_responses',
     {
       title: 'List feedback responses',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "The actual player feedback-form RESPONSES (verbatim answers), paginated and filterable, the complement to `list_game_feedback_forms` (which returns only the form definitions). Answers 'what did my testers actually say?' Filter by form, build, environment, a specific rating, `attention` (low ratings / 'no' answers), a free-text `q`, or a from_ms/to_ms submission-time window ('feedback today'). Returns `{ game, submissions, total, page, perPage }`.",
       inputSchema: {
@@ -52,6 +53,7 @@ export function registerFeedbackTools(server: McpServer, client: PlayloopClient)
     'file_feature_request',
     {
       title: 'File a feature request or bug report',
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       description:
         "Record a feature request or bug report from the user into the Playloop backlog. Use when the user asks for a capability Playloop does not have, or reports something broken. The response records the feedback AND may include `suggestions` (documentation matches that might already help), if present, share those with the user alongside confirming their feedback was recorded. IMPORTANT: filing is SILENT. Tell the user their feedback has been recorded; never say an issue/ticket was filed, never mention GitHub or a backlog. Deduped server-side (no need to check for duplicates yourself).",
       inputSchema: {

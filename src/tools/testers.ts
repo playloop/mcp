@@ -8,13 +8,14 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { TesterSummary } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerTestersTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'get_tester_summary',
     {
       title: 'Get tester summary',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Return the rollup for one tester (session count, first/last seen, playtime, geo, last build) plus their sessions and AI summary. Tester identity is a persistent anonymous device GUID. Returns `{ game, rollup, sessions, summary }`.',
       inputSchema: {

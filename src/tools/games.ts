@@ -10,7 +10,7 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { GamesListResponse, GameDetail, CreateGameResponse } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 // Mirrors the platform repo's lib/games/genres.ts GENRES + actions.ts engines.
 const GENRES = [
@@ -32,6 +32,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'list_games',
     {
       title: 'List games',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'List every game owned by the management-key holder. Read-only. Optional `q` (name/slug substring), `sort`, `order`. Returns `{ games: Game[] }`.',
       inputSchema: {
@@ -57,6 +58,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'get_game',
     {
       title: 'Get game',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Return one game (by id OR slug) plus session, build, and tester counts. Returns `{ game, counts: { sessionCount, buildCount, testerCount } }`. 404s when the game doesn't exist or belongs to another user.",
       inputSchema: {
@@ -82,6 +84,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'create_game',
     {
       title: 'Create game',
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       description:
         "Create a new game in the active workspace. Requires an ADMIN or OWNER role (members/viewers get 403). Returns 201 `{ game, ingestKey }`, `ingestKey` is the show-once write-only telemetry key to embed in the SDK (also visible later on the game's Connections page). The URL slug is derived from the name automatically.",
       inputSchema: {
@@ -106,6 +109,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'set_game_cover',
     {
       title: 'Set game cover',
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
       description:
         "Set (or replace) a game's cover image. Requires an ADMIN or OWNER role (members/viewers get 403). Send the raw image bytes base64-encoded (no data: URL prefix), PNG, JPEG, or WebP, 3 MB max before encoding; the declared contentType must match the actual bytes (415 otherwise). Replaces any existing cover. Returns `{ game, coverUrl }`.",
       inputSchema: {
@@ -141,6 +145,7 @@ export function registerGamesTools(server: McpServer, client: PlayloopClient): v
     'update_game',
     {
       title: 'Update game settings',
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       description:
         "Update a game's AI/analysis configuration: name, description, genre, subgenres, the AI context prompt, KPI buckets, analysis-tuning knobs, the auto-analyze and feedback-themes toggles, and the heartbeat/summary event names. Partial update: only the fields you send change, and null clears a clearable field. Requires an ADMIN or OWNER role (members/viewers get 403). Slug and engine are fixed at creation. Returns `{ game }`.",
       inputSchema: {

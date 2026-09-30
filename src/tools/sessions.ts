@@ -9,7 +9,7 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { PaginatedSessions, SessionDetailResponse } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 const SESSION_STATUSES = ['pending', 'transcribing', 'processing', 'analyzed', 'failed'] as const
 const SESSION_SOURCES = [
@@ -29,6 +29,7 @@ export function registerSessionsTools(server: McpServer, client: PlayloopClient)
     'list_sessions',
     {
       title: 'List sessions',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Paginated playtest sessions across the user\'s games. All filters optional. Returns `{ items, hasMore, total }`.',
       inputSchema: {
@@ -66,6 +67,7 @@ export function registerSessionsTools(server: McpServer, client: PlayloopClient)
     'get_session',
     {
       title: 'Get session',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Return one session with all its insights joined. Returns `{ session, insights }`. 404 on ownership mismatch (existence-leak convention).',
       inputSchema: {

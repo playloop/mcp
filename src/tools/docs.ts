@@ -12,13 +12,14 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerDocsTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'search_docs',
     {
       title: 'Search Playloop docs',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Semantic search over the Playloop documentation (how to use the platform, SDKs, dashboard, billing, connections, security). Returns the top-k most relevant passages with their source, for grounding answers about how Playloop works. Read-only. Returns `{ results }`.',
       inputSchema: {

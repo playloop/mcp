@@ -16,7 +16,7 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 const ENV = z.string().regex(/^[a-z0-9_-]+$/).optional().describe('Environment scope.')
 
@@ -25,6 +25,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_usage',
     {
       title: 'Get account usage',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Your account's own usage + plan state (scoped to your management key's workspace): current plan, your managed-AI CREDIT balance (total, included vs purchased, spent this month, a low-balance flag, and when the monthly allowance resets), and storage bytes used. Answers 'how many credits do I have left / am I running low / how much storage am I using?' Returns `{ plan, credits, storage }` (`credits` is null for unlimited accounts).",
       inputSchema: {},
@@ -42,6 +43,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_feedback_themes',
     {
       title: 'Get feedback themes',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "The recurring THEMES clustered from players' written feedback for a game, e.g. 'N testers said the tutorial is confusing'. Each theme carries a distinct-tester count, sentiment, and a short example, plus the count of one-off responses that didn't cohere. Reads the stored rollup only (never triggers AI). Returns `{ game, feedbackThemes }` (feedbackThemes is null if none generated).",
       inputSchema: { game: z.string().min(1).describe('Game id, slug, or exact name.') },
@@ -63,6 +65,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_game_summary',
     {
       title: 'Get game summary',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Return the persisted whole-game AI rollup summary, the 'state of my game in a paragraph.' Reads the stored summary only (null if none generated yet). Returns `{ game, summary }`.",
       inputSchema: { game: z.string().min(1).describe('Game id, slug, or exact name.'), env: ENV },
@@ -85,6 +88,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_retention',
     {
       title: 'Get retention',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Cohort-eligible retention (D1/D2/D7/D30) for a game, optionally scoped to one build. Each window is `{ eligible, retained, rate }` (a device is eligible for D-N once its first session is ≥N days old; retained if it returned on/after day N). Call twice with `build` to answer 'did 1.5 improve retention vs 1.4?' Returns `{ game, build, devices, retention }`.",
       inputSchema: {
@@ -111,6 +115,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_live_activity',
     {
       title: 'Get live activity',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "A real-time snapshot: how many players are online right now (heartbeat in the last ~2 min) plus the most recent live events (joins / leaves / crashes / feedback / notable events). Answers 'is anyone playing right now?' A poll snapshot, not a stream. Returns `{ game, online, recentEvents }`.",
       inputSchema: { game: z.string().min(1).describe('Game id, slug, or exact name.'), env: ENV },
@@ -133,6 +138,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_activity',
     {
       title: 'Get activity',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Volume over a window: players + sessions in the last N days vs the prior N days (for a trend), plus peak concurrency and who's online now. Answers 'how many people played this week / are my numbers growing?' `byDistribution` splits both windows by where each session was played (e.g. `itch-web`, `web-other`, or a build's own value such as `steam`; `unknown` when not recorded), answering 'how many players came from itch vs my site vs Steam?' Returns `{ game, windowDays, onlineNow, peakConcurrent, current, previous, byDistribution }`.",
       inputSchema: {
@@ -159,6 +165,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_activity_digest',
     {
       title: 'Get activity digest',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "The one-call 'what happened today / yesterday / this week' digest for a game: sessions in the window, total + median playtime (answers 'how long did they play?'), new vs returning testers, new crashes (count + the top signature), new feedback (count + how many need attention), the most notable insights, and the top drop reason. Prefer this over stitching several tools for 'what happened <period>?' / 'how long did they play <period>?' questions. Pass `window` ('today' | 'yesterday' | 'week', UTC days; default today) or an explicit `from_ms`/`to_ms`. Returns `{ game, window, sessions, playtime: { totalSec, medianSec }, testers, crashes, feedback, notableInsights, topDropReason }`.",
       inputSchema: {
@@ -190,6 +197,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_metric_trend',
     {
       title: 'Get metric trend (crash + drop rate)',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Have crashes or drop-offs CHANGED? Crash rate (crashes / sessions) and drop rate (sessions where the player quit without finishing / sessions) for the last N days vs the immediately-prior equal window, with percentage-point deltas. Answers 'is my game crashing more this week?' / 'are more players dropping out?' Rates are null for an empty window and deltas null without a baseline. Returns `{ game, windowDays, current, previous, deltas }`.",
       inputSchema: {
@@ -216,6 +224,7 @@ export function registerGameAnalyticsTools(server: McpServer, client: PlayloopCl
     'get_platform_breakdown',
     {
       title: 'Get platform / segment breakdown',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Segment a game's sessions by country and by source (SDK/engine), each with session + distinct-device counts, biggest first. Answers 'where are my players from?' and 'what engine are my sessions coming from?' Returns `{ game, totalSessions, byCountry, bySource }`.",
       inputSchema: {

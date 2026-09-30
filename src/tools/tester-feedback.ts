@@ -16,7 +16,7 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, AI_GENERATION_TOOL_ANNOTATIONS, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 const ENV_SCHEMA = z
   .string()
@@ -28,6 +28,7 @@ export function registerSuggestFixesTool(server: McpServer, client: PlayloopClie
     'suggest_fixes',
     {
       title: 'Suggest fixes',
+      annotations: AI_GENERATION_TOOL_ANNOTATIONS,
       description:
         "AI-generated prescriptive fix suggestions for friction surfaced in one build OR the diff between two builds. Single-build mode (?build=) targets the build's top friction; compare mode (?a=&b=) targets friction that worsens or emerges between the two builds. Free tier needs a BYO key, returns `{ ok:false, requiresPremium:true }` with status 402 otherwise. Returns `{ ok, mode, game, environment, suggestions, source, emptyInput, … }`.",
       inputSchema: {
@@ -61,6 +62,7 @@ export function registerFixFirstTool(server: McpServer, client: PlayloopClient):
     'get_fix_first',
     {
       title: 'What should I fix first',
+      annotations: AI_GENERATION_TOOL_ANNOTATIONS,
       description:
         "Whole-game 'what should I fix first?' synthesis. Weighs the game's live signals ACROSS sources, crashes, drop reasons, player-feedback themes, and funnel drop-offs, into ONE prioritized, directional fix list (priority 1 = fix first). Directional, not fabricated: it recommends where to look when a signal is thin and never asserts a cause the data doesn't show. Degrades to a deterministic ranking when the workspace is out of managed-AI credits (never fails). Returns `{ ok, game, environment, fixes, source, notEnoughData, signalCount }`.",
       inputSchema: {
@@ -87,6 +89,7 @@ export function registerTesterJourneyTool(server: McpServer, client: PlayloopCli
     'get_tester_journey',
     {
       title: 'Get tester journey',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Return one tester's full session-by-session timeline for a game, chronological entries (oldest first), each with the session metadata, the per-session insights, the most-severe friction summary, and the strongest praise. Includes an engagement-trend classification (`rising`/`flat`/`declining`/`insufficient_data`) reflecting how their engagement shifts across the run of sessions. The `device_id` arg accepts a tester handle OR a device id (handle tried first). Returns `{ journey }` or 404.",
       inputSchema: {
@@ -120,6 +123,7 @@ export function registerTesterArchetypesTool(
     'list_tester_archetypes',
     {
       title: 'List tester archetypes',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Group the game's testers into behavior archetypes based on their per-tester narrative summaries. Returns `{ archetypes, testerCount, reason?, modelId? }`. Always returns a result object, empty `archetypes` + populated `reason` (`requires_byo_key` / `insufficient_data` / `api_error`) when clustering couldn't run. Each archetype has an AI-generated label (or `Cluster N` fallback), representative testers (with summary excerpts), common friction tags, and avg session count / playtime minutes.",
       inputSchema: {
@@ -146,6 +150,7 @@ export function registerFeedbackFormsTool(server: McpServer, client: PlayloopCli
     'list_game_feedback_forms',
     {
       title: 'List game feedback forms',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List the studio-defined Player Feedback forms for a game (the multi-field forms the SDK surfaces in your game via `feedback.submit` / `feedback.open`). Each form has its field definitions (id, label, kind in `rating-1-5`/`short-text`/`yes-no`/`long-text`, required, placeholder, helpText), trigger hint, active flag, and a per-form submission count. Tester-level submission rows are NOT returned here, they live on the session and slot into `get_session`. Use this to answer 'what feedback am I collecting from my testers?' Returns `{ game, prompts }`.",
       inputSchema: {
@@ -168,6 +173,7 @@ export function registerFeedbackFormsTool(server: McpServer, client: PlayloopCli
     'create_feedback_form',
     {
       title: 'Create feedback form',
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       description:
         "Create a Player Feedback form for a game (the multi-field forms the SDK surfaces in your game via `feedback.open` / `feedback.submit`). Requires an ADMIN or OWNER role (members/viewers get 403). Give the form a title and 1-20 fields; each field needs a unique id (answers are keyed by it), a label, and a kind (`rating-1-5`, `short-text`, `yes-no`, or `long-text`), with optional required/placeholder/helpText. Optional triggerHint notes where the game should show the form; active defaults to true. Set allowRepeatSubmissions to true only for repeat voluntary notes; the default is false. Returns `{ form }`.",
       inputSchema: {

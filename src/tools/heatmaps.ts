@@ -9,13 +9,14 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { HeatmapResponse } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerHeatmapsTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'get_heatmap',
     {
       title: 'Get heatmap',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Return per-room player-position density grids for a game, built from `player_pos` telemetry events. Returns `{ game, rooms: [{ room, width, height, grid, eventCount }], eventCount }`.",
       inputSchema: {

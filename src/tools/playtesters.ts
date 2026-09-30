@@ -30,7 +30,7 @@ import type {
   TesterInvitesResponse,
   PlaytestHandlesResponse,
 } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerPlaytestersTools(
   server: McpServer,
@@ -40,6 +40,7 @@ export function registerPlaytestersTools(
     'list_playtest_batches',
     {
       title: 'List playtest batches',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'List every playtest batch for a game, name, distribution target (Steam / itch / Keymailer / etc.), fulfillment source, redemption mode (invite or public share link), identity mode, and rollup counts (key_count / redeemed_count / revoked_count). Useful for answering "how is my Steam Next Fest distribution going?" Returns `{ game, batches: PlaytestBatch[] }`.',
       inputSchema: {
@@ -68,6 +69,7 @@ export function registerPlaytestersTools(
     'get_playtest_batch',
     {
       title: 'Get playtest batch',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Detail for one playtest batch. Same fields as `list_playtest_batches` plus the full `instructions` Markdown (the redemption-page copy the studio wrote, can be long). No key cleartext / ciphertext under any circumstances. Returns `{ game, batch: PlaytestBatch }`.',
       inputSchema: {
@@ -91,6 +93,7 @@ export function registerPlaytestersTools(
     'list_playtest_keys',
     {
       title: 'List playtest keys',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List keys in a batch with lifecycle + redemption metadata: status (`available` / `reserved` / `redeemed` / `revoked` / `expired`), when it was redeemed, by which email + handle, from which country (ISO-3166 alpha-2), with which user-agent, and the linked invite id if any. Use this to answer 'who redeemed what, when, and from where' without ever holding a cleartext key. Paginated, returns `{ batch, keys: PlaytestKey[], hasMore, total }`.",
       inputSchema: {
@@ -119,6 +122,7 @@ export function registerPlaytestersTools(
     'list_tester_invites',
     {
       title: 'List tester invites',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List every 1:1 invite in a batch, recipient email, optional personal note, and the send / opened / redeemed timestamps. `opened_at` is a best-effort email-tracking beacon and may be null even when the recipient did open (many email clients block beacons); `redeemed_at` is the definitive 'did they actually use the link' signal. The per-tester redemption token is NEVER returned. Returns `{ batch, invites: TesterInvite[] }`.",
       inputSchema: {
@@ -148,6 +152,7 @@ export function registerPlaytestersTools(
     'list_playtest_handles',
     {
       title: 'List playtest handles',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List SDK-linked tester handles for a game with rollup metrics: session_count, total_play_time_ms, last_seen_at, distinct_countries (a wide spread can indicate a shared key). Defaults to last_seen_at desc, recently-active testers first; sort by session_count or total_play_time_ms to find your most-engaged testers. The one-shot claim token is NEVER returned. Paginated, returns `{ game, handles: PlaytestHandle[], hasMore, total }`.",
       inputSchema: {
