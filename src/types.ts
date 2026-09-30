@@ -10,11 +10,22 @@
 
 export interface Game {
   id: string
-  userId: string
   name: string
   slug: string
+  engine: string | null
+  genre: string | null
+  subgenres: string[] | null
+  description: string | null
+  steamAppId: string | null
+  coverImagePath: string | null
+  aiContext: string | null
+  kpis: { primary: string[]; secondary: string[]; ignore: string[] } | null
+  autoAnalyzeEnabled: boolean
+  feedbackThemesEnabled: boolean
+  crashesEnabled: boolean
+  peakConcurrent: number
+  peakConcurrentAt: number | null
   createdAt: number
-  updatedAt: number
   [key: string]: unknown
 }
 
