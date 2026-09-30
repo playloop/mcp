@@ -83,7 +83,7 @@ args = ["-y", "--package=git+https://github.com/playloop/mcp.git#v0.5.0", "playl
 env = { PLAYLOOP_MANAGEMENT_KEY = "pl_mgmt_REPLACE_ME" }
 ```
 
-## Install: hosted SSE
+## Install: hosted
 
 For a connection without a local process, see the [hosted MCP setup guide](https://playloop.gg/docs/mcp). The Git release uses stdio by default.
 

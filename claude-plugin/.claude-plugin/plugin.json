@@ -23,7 +23,7 @@
   "mcpServers": {
     "playloop": {
       "type": "http",
-      "url": "https://playloop.gg/api/mcp/sse",
+      "url": "https://playloop.gg/api/mcp",
       "headers": {
         "Authorization": "Bearer ${user_config.management_key}"
       }
