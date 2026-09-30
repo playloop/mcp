@@ -8,7 +8,7 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { PaginatedInsights } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 const INSIGHT_TYPES = [
   'stuck-point',
@@ -30,6 +30,7 @@ export function registerInsightsTools(server: McpServer, client: PlayloopClient)
     'query_insights',
     {
       title: 'Query insights',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Search across the user's insights. Useful for friction analysis ('show me all stuck-points in build 0.5.0') or praise hunts ('top positive moments this month').",
       inputSchema: {

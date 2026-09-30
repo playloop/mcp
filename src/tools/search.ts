@@ -9,13 +9,14 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerSearchTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'search_everything',
     {
       title: 'Search everything',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Full-text search across your sessions, games, insights, and events (each capped, most-relevant first). Use it to resolve a fuzzy name or find 'the sessions where players mentioned X.' Returns `{ sessions, games, insights, events }`.",
       inputSchema: {

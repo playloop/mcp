@@ -12,13 +12,14 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
 import type { BuildSummary, FrictionCompareResponse } from '../types.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerBuildsTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'list_builds',
     {
       title: 'List builds',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List every build (distinct `metadata.gameVersion`) for a game, one rollup per version, session count, unique devices, first/last seen, total playtime, dominant country, newest-active first. Use this to discover a game's builds and find the LATEST version before calling `get_build_summary` (which needs an exact version). Answers 'how did my latest build do?' Returns `{ game, builds }`.",
       inputSchema: {
@@ -43,6 +44,7 @@ export function registerBuildsTools(server: McpServer, client: PlayloopClient): 
     'get_build_summary',
     {
       title: 'Get build summary',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         'Return the rollup for one build (session count, unique devices, first/last seen, total playtime) plus the persisted AI build summary if present. Returns `{ game, rollup, summary }`.',
       inputSchema: {
@@ -68,6 +70,7 @@ export function registerBuildsTools(server: McpServer, client: PlayloopClient): 
     'compare_builds',
     {
       title: 'Compare builds',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Composite tool: fetch two builds' rollups + per-build AI summaries AND the classified friction diff (resolved / got_smaller / carried_over / got_larger / introduced per tag) between them. Useful for 'what changed between 0.4.9 and 0.5.0?' style questions. Returns `{ game, build_a, build_b, deltas, friction_diff }`. The `friction_diff` field is the higher-signal one for narrative answers; `deltas` is preserved for back-compat scripts.",
       inputSchema: {
@@ -115,6 +118,7 @@ export function registerBuildsTools(server: McpServer, client: PlayloopClient): 
     'get_build_drop_reasons',
     {
       title: 'Get build drop reasons',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "The structured 'why players quit' rollup for one build, per-cluster drop reasons with distinct-tester counts, plus how many testers dropped and how many dropped with no clear cause. Distinct from `get_build_summary` (prose): this is the machine-readable drop-cause breakdown. Returns `{ gameId, version, testersWhoDropped, testersDroppedNoClearCause, clusters, ... }`.",
       inputSchema: {

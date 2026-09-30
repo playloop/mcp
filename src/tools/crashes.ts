@@ -12,13 +12,14 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS } from './_shared.js'
 
 export function registerCrashesTools(server: McpServer, client: PlayloopClient): void {
   server.registerTool(
     'list_crashes',
     {
       title: 'List unresolved crashes',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List the unresolved crash groups for a game so you can answer 'what's crashing in my game?' Each group is one crash signature with its occurrence count, first/last seen, affected build versions, and platform. Optionally narrow by platform prefix or a from_ms/to_ms report-time window ('crashes today'). Returns `{ crashes }` (newest / most-frequent first, capped at 200).",
       inputSchema: {
@@ -56,6 +57,7 @@ export function registerCrashesTools(server: McpServer, client: PlayloopClient):
     'get_crash_groups',
     {
       title: 'Get crash groups',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Crashes GROUPED by signature, one row per distinct crash with its occurrence count, affected-session count, first/last seen, affected build versions, and latest message/stack. Answers 'what's the most common crash and how many people hit it?' (the aggregated view; `list_crashes` is the flat unresolved list). Optionally scope to one build. Returns `{ game, groups }`.",
       inputSchema: {

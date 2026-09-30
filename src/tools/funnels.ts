@@ -12,7 +12,7 @@
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { PlayloopClient } from '../client.js'
-import { jsonContent, errorContent } from './_shared.js'
+import { jsonContent, errorContent, READ_ONLY_TOOL_ANNOTATIONS, WRITE_TOOL_ANNOTATIONS } from './_shared.js'
 
 const FUNNEL_STEP = z.object({
   id: z.string().min(1).max(64).describe('Stable step id, unique within the funnel.'),
@@ -50,6 +50,7 @@ export function registerFunnelsTools(server: McpServer, client: PlayloopClient):
     'list_game_funnels',
     {
       title: 'List game funnels',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "List the conversion funnels defined for a game (default most-recently-updated first). Each funnel carries its ordered `steps` (`{ id, label, eventName, propertyFilter? }[]`), the `mode` (`ordered` = steps must fire in sequence / `any-order` = set membership), the `scopeMode` (`events` / `players`), an optional `conversionWindowMs`, the pinned `audienceId` (or null), and `definitionRev` (its current revision). These are the funnel DEFINITIONS, the computed step-by-step conversion numbers are time-scoped and live on the dashboard, not here. Use this to answer 'what funnels are set up for this game?' Returns `{ game, funnels }`.",
       inputSchema: {
@@ -75,6 +76,7 @@ export function registerFunnelsTools(server: McpServer, client: PlayloopClient):
     'get_funnel_result',
     {
       title: 'Get funnel result',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "The COMPUTED result for one funnel, per-step reach + step-to-step conversion + the biggest drop-off. This is the payoff `list_game_funnels` doesn't give (that returns only definitions). Answers 'where's the drop-off in my funnel?' Optionally scope by build, a time window, or an environment. Returns the funnel result object (steps with reach/conversion + the drop step).",
       inputSchema: {
@@ -108,6 +110,7 @@ export function registerFunnelsTools(server: McpServer, client: PlayloopClient):
     'get_funnel_trend',
     {
       title: 'Get funnel trend',
+      annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
         "Has the funnel CHANGED? Runs the funnel for the last N days AND the immediately-prior equal window, returning both windows' per-step results plus deltas, percentage-point change per step and the overall completion change. Answers 'did this week's build move the funnel?' `deltas` is null when either window has no players (no baseline). Returns `{ funnel, windowDays, scope, current, previous, deltas }`.",
       inputSchema: {
@@ -139,6 +142,7 @@ export function registerFunnelsTools(server: McpServer, client: PlayloopClient):
     'create_funnel',
     {
       title: 'Create funnel',
+      annotations: WRITE_TOOL_ANNOTATIONS,
       description:
         "Create a conversion funnel for a game. Requires a member, admin, or owner role (viewers get 403). Define 2\u201320 ordered `steps` (each matching one telemetry event, optionally property-filtered), pick the `mode` (`ordered` = steps must fire in sequence, default / `any-order` = set membership) and `scopeMode` (`events` counts event flows, default / `players` counts unique players). Results compute from the game's EXISTING telemetry \u2014 no SDK change needed. Fetch the numbers afterwards with `get_funnel_result`. Returns 201 `{ funnel }`.",
       inputSchema: {
