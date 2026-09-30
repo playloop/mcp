@@ -41,7 +41,7 @@ export function fakeGame(over: Partial<Game> = {}): Game {
 
 export function fakeGameDetail(): GameDetail {
   return {
-    game: fakeGame(),
+    game: { ...fakeGame(), heartbeatEventName: null, summaryEventName: null, analysisTuning: null },
     counts: { sessionCount: 12, buildCount: 3, testerCount: 5 },
   }
 }

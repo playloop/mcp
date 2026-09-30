@@ -29,6 +29,13 @@ export interface Game {
   [key: string]: unknown
 }
 
+/** The single-game view: `Game` plus the settings `update_game` accepts. */
+export interface GameSettings extends Game {
+  heartbeatEventName: string | null
+  summaryEventName: string | null
+  analysisTuning: Record<string, unknown> | null
+}
+
 /** The short `{ id, slug, name }` game reference most per-game reads return. */
 export interface GameRef {
   id: string
@@ -43,7 +50,7 @@ export interface GameCounts {
 }
 
 export interface GameDetail {
-  game: Game
+  game: GameSettings
   counts: GameCounts
 }
 
