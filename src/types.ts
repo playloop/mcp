@@ -10,12 +10,37 @@
 
 export interface Game {
   id: string
-  userId: string
   name: string
   slug: string
+  engine: string | null
+  genre: string | null
+  subgenres: string[] | null
+  description: string | null
+  steamAppId: string | null
+  coverImagePath: string | null
+  aiContext: string | null
+  kpis: { primary: string[]; secondary: string[]; ignore: string[] } | null
+  autoAnalyzeEnabled: boolean
+  feedbackThemesEnabled: boolean
+  crashesEnabled: boolean
+  peakConcurrent: number
+  peakConcurrentAt: number | null
   createdAt: number
-  updatedAt: number
   [key: string]: unknown
+}
+
+/** The single-game view: `Game` plus the settings `update_game` accepts. */
+export interface GameSettings extends Game {
+  heartbeatEventName: string | null
+  summaryEventName: string | null
+  analysisTuning: Record<string, unknown> | null
+}
+
+/** The short `{ id, slug, name }` game reference most per-game reads return. */
+export interface GameRef {
+  id: string
+  name: string
+  slug: string
 }
 
 export interface GameCounts {
@@ -25,7 +50,7 @@ export interface GameCounts {
 }
 
 export interface GameDetail {
-  game: Game
+  game: GameSettings
   counts: GameCounts
 }
 
@@ -167,12 +192,12 @@ export interface PlaytestBatch {
 }
 
 export interface PlaytestBatchListResponse {
-  game: Game
+  game: GameRef
   batches: PlaytestBatch[]
 }
 
 export interface PlaytestBatchDetailResponse {
-  game: Game
+  game: GameRef
   batch: PlaytestBatch
 }
 
@@ -240,7 +265,7 @@ export interface PlaytestHandle {
 }
 
 export interface PlaytestHandlesResponse {
-  game: Game
+  game: GameRef
   handles: PlaytestHandle[]
   hasMore: boolean
   total: number

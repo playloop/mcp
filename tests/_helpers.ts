@@ -19,18 +19,29 @@ import type {
 export function fakeGame(over: Partial<Game> = {}): Game {
   return {
     id: 'g_1',
-    userId: 'u_1',
     name: 'Dungeon Crawl',
     slug: 'dungeon-crawl',
+    engine: 'unity',
+    genre: 'RPG',
+    subgenres: null,
+    description: null,
+    steamAppId: null,
+    coverImagePath: null,
+    aiContext: null,
+    kpis: null,
+    autoAnalyzeEnabled: true,
+    feedbackThemesEnabled: true,
+    crashesEnabled: true,
+    peakConcurrent: 0,
+    peakConcurrentAt: null,
     createdAt: 1_700_000_000_000,
-    updatedAt: 1_700_000_000_000,
     ...over,
   }
 }
 
 export function fakeGameDetail(): GameDetail {
   return {
-    game: fakeGame(),
+    game: { ...fakeGame(), heartbeatEventName: null, summaryEventName: null, analysisTuning: null },
     counts: { sessionCount: 12, buildCount: 3, testerCount: 5 },
   }
 }
