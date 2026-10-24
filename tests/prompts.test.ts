@@ -172,6 +172,15 @@ describe('recipe prompts', () => {
     expect(out.messages[0]?.content.text).toContain("telemetry.track('player_died'")
   })
 
+  it('read-only mode skips a recipe whose write tool would only refuse', () => {
+    const server = createPlayloopMcpServer({ apiKey: 'k', readOnly: true })
+    const names = Object.keys(
+      (server as unknown as { _registeredPrompts: Record<string, unknown> })._registeredPrompts,
+    )
+    expect(names).not.toContain('set_up_ab_test')
+    expect(names).toContain('read_last_build_quits')
+  })
+
   it('every tool a recipe names is a tool this server registers', () => {
     const server = createPlayloopMcpServer({ apiKey: 'k' })
     const tools = Object.keys(

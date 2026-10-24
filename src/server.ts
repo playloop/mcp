@@ -133,7 +133,7 @@ export function createPlayloopMcpServer(opts: PlayloopMcpServerOptions): McpServ
   registerBuildComparisonPrompt(server)
   registerFrictionAnalysisPrompt(server)
   registerTesterSpotlightPrompt(server)
-  registerRecipePrompts(server)
+  registerRecipePrompts(server, new Set(opts.readOnly ? MCP_WRITE_TOOLS : []))
 
   return server
 }

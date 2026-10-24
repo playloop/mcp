@@ -5,7 +5,8 @@
  * The recipes themselves live in `recipes.generated.ts`, generated from the
  * Playloop prompt source files so this package and the hosted server carry
  * the same text. This file only registers them; every argument is a required
- * string.
+ * string. A recipe that calls a tool this server can't run (read-only mode
+ * refuses writes) is not offered, so it can't fail halfway.
  */
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
@@ -22,8 +23,12 @@ function recipeMessages(recipe: PromptRecipe, args: Readonly<Record<string, stri
   }
 }
 
-export function registerRecipePrompts(server: McpServer): void {
+export function registerRecipePrompts(
+  server: McpServer,
+  unavailableTools: ReadonlySet<string> = new Set(),
+): void {
   for (const recipe of PROMPT_RECIPES) {
+    if (recipe.tools.some((tool) => unavailableTools.has(tool))) continue
     const meta = { title: recipe.title, description: recipe.description }
     if (recipe.args.length === 0) {
       server.registerPrompt(recipe.name, meta, () => recipeMessages(recipe, {}))

@@ -1,9 +1,8 @@
 // GENERATED FILE. Do not edit by hand.
 //
-// The Playloop prompt recipes, generated from the prompt source files with
-// `npm run mcp:prompts` in the Playloop app repo. Each one is registered as an
-// MCP prompt (a slash command in Claude Code). Content hash, identical in
-// every copy of this file: sha256:b8f4a9001ebb812d8d46f5b992669828148219d86045078bc68b04df4da722e3
+// The Playloop prompt recipes, generated from the Playloop prompt sources.
+// Each one is registered as an MCP prompt (a slash command in Claude Code).
+// Content hash, identical in every copy of this file: sha256:b8f4a9001ebb812d8d46f5b992669828148219d86045078bc68b04df4da722e3
 
 export type PromptKind = 'recipe' | 'episode'
 
