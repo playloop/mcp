@@ -62,8 +62,9 @@ describe('createPlayloopMcpServer', () => {
         // Funnels (1 read + 1 write)
         'list_game_funnels',
         'create_funnel',
-        // Docs (1)
+        // Docs (2)
         'search_docs',
+        'search_guides',
         // Feedback write (1)
         'file_feature_request',
         // Question-coverage wave: builds/feedback/funnel/search/crash/game-analytics
@@ -105,12 +106,21 @@ describe('createPlayloopMcpServer', () => {
     expect(toolNames({ _registeredTools: tools })).toContain('file_feature_request')
   })
 
-  it('registers 4 prompts', () => {
+  it('registers the 4 hand-written prompts plus the recipe prompts', () => {
     const server = createPlayloopMcpServer({ apiKey: 'k' })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prompts = (server as unknown as { _registeredPrompts: Record<string, any> })._registeredPrompts
     expect(Object.keys(prompts).sort()).toEqual(
-      ['build_comparison', 'friction_analysis', 'tester_spotlight', 'weekly_digest'].sort(),
+      [
+        'build_comparison',
+        'friction_analysis',
+        'tester_spotlight',
+        'weekly_digest',
+        'add_death_tracking',
+        'how_do_i',
+        'read_last_build_quits',
+        'set_up_ab_test',
+      ].sort(),
     )
   })
 

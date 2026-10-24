@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- `search_guides` tool: ask Playloop's public how-to guides and SDK READMEs "how do I..." from your agent.
+- Four recipe prompts: `add_death_tracking`, `read_last_build_quits`, `set_up_ab_test`, and `how_do_i`. In Claude Code they show up as slash commands.
+
 ## [0.5.0] - 2026-09-09
 
 - Public Git installation with a build step on first install, without an npm registry package.

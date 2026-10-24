@@ -184,7 +184,7 @@ keys rejected). Filters belong on tool calls, not resource URIs.
 | `playloop://sessions/{id}` | One session and its insights. |
 | `playloop://builds/{game}/{version}` | One build rollup plus its AI build summary. |
 
-## Prompts (pre-canned templates)
+## Prompts
 
 | Prompt | What it asks the agent to do |
 |---|---|
@@ -192,6 +192,12 @@ keys rejected). Filters belong on tool calls, not resource URIs.
 | `build_comparison` | Compare two builds (improvements + regressions). |
 | `friction_analysis` | Find recurring friction at game / build / tester scope. |
 | `tester_spotlight` | Identify and report on top-engaged testers. |
+| `add_death_tracking` | Wire a death event with its cause into a TypeScript game, then check it arrived. |
+| `read_last_build_quits` | Read why players quit the newest build and pick the one fix to make first. |
+| `set_up_ab_test` | Draft an experiment for one change, wire the variant, start it when the build is ready. |
+| `how_do_i` | Answer a how-do-I question from the public Playloop guides, with the page each step came from. |
+
+The last four are recipes, generated from Playloop's prompt source files. In Claude Code every prompt shows up as a slash command once the server is connected.
 
 ## Telemetry & feedback basics
 

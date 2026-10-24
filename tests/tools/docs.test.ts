@@ -61,3 +61,27 @@ describe('tool: search_docs', () => {
     expect(parsed.status).toBe(500)
   })
 })
+
+describe('tool: search_guides', () => {
+  function guidesTool(spy: (p: string, q?: unknown) => unknown) {
+    const server = new McpServer({ name: 'test', version: '0.0.0' })
+    registerDocsTools(server, fakeClient(spy))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (server as unknown as { _registeredTools: Record<string, any> })._registeredTools['search_guides']
+  }
+
+  it('is read-only and takes the same q + k as search_docs', () => {
+    const tool = guidesTool(() => ({ results: [] }))
+    expect(tool.annotations.readOnlyHint).toBe(true)
+    expect(tool.inputSchema.safeParse({}).success).toBe(false)
+    expect(tool.inputSchema.safeParse({ q: 'how do I track deaths?', k: 3 }).success).toBe(true)
+    expect(tool.inputSchema.safeParse({ q: 'x', k: 11 }).success).toBe(false)
+  })
+
+  it('always sends scope=guides, even if a caller passes another scope', async () => {
+    const spy = vi.fn(() => ({ results: [] }))
+    const tool = guidesTool(spy as unknown as (p: string, q?: unknown) => unknown)
+    await tool.handler({ q: 'track deaths', k: 3, scope: 'all' }, {})
+    expect(spy).toHaveBeenCalledWith('/api/v1/docs/search', { q: 'track deaths', k: 3, scope: 'guides' })
+  })
+})

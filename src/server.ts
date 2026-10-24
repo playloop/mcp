@@ -33,6 +33,7 @@ import { registerWeeklyDigestPrompt } from './prompts/weekly-digest.js'
 import { registerBuildComparisonPrompt } from './prompts/build-comparison.js'
 import { registerFrictionAnalysisPrompt } from './prompts/friction-analysis.js'
 import { registerTesterSpotlightPrompt } from './prompts/tester-spotlight.js'
+import { registerRecipePrompts } from './prompts/recipes.js'
 
 export interface PlayloopMcpServerOptions extends PlayloopClientOptions {
   /** Server name reported in the MCP handshake. Defaults to "playloop". */
@@ -132,6 +133,7 @@ export function createPlayloopMcpServer(opts: PlayloopMcpServerOptions): McpServ
   registerBuildComparisonPrompt(server)
   registerFrictionAnalysisPrompt(server)
   registerTesterSpotlightPrompt(server)
+  registerRecipePrompts(server)
 
   return server
 }
