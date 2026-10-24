@@ -31,13 +31,18 @@ function docsSearchInput(qDescription: string) {
   }
 }
 
-/** A forced `scope` is written after the caller's args, so a caller can never override it. */
-function docsSearchHandler(client: PlayloopClient, scope?: 'guides') {
+/**
+ * A forced `scope` is written after the caller's args, so a caller can never
+ * override it. The guides tool also sends its documented default `k` itself,
+ * because the API reads a missing `k` as 1.
+ */
+function docsSearchHandler(client: PlayloopClient, forced?: { scope: 'guides'; defaultK: number }) {
   return async (args: Record<string, unknown>) => {
     try {
       const data = await client.get<Record<string, unknown>>('/api/v1/docs/search', {
+        ...(forced ? { k: forced.defaultK } : {}),
         ...(args as Record<string, string | number | undefined>),
-        ...(scope ? { scope } : {}),
+        ...(forced ? { scope: forced.scope } : {}),
       })
       return jsonContent(data)
     } catch (err) {
@@ -68,6 +73,6 @@ export function registerDocsTools(server: McpServer, client: PlayloopClient): vo
         "Answer 'how do I...' questions from Playloop's public how-to guides and SDK READMEs (wiring the SDK, tracking events, running experiments, reading playtests). Never returns your game data; the pricing and legal pages stay out. Read-only. Returns `{ results }`, each with its source, title, url, and passage.",
       inputSchema: docsSearchInput('The question, for example "how do I track player deaths?".'),
     },
-    docsSearchHandler(client, 'guides'),
+    docsSearchHandler(client, { scope: 'guides', defaultK: 5 }),
   )
 }

@@ -84,4 +84,11 @@ describe('tool: search_guides', () => {
     await tool.handler({ q: 'track deaths', k: 3, scope: 'all' }, {})
     expect(spy).toHaveBeenCalledWith('/api/v1/docs/search', { q: 'track deaths', k: 3, scope: 'guides' })
   })
+
+  it('sends its documented default k=5 when the caller omits k', async () => {
+    const spy = vi.fn(() => ({ results: [] }))
+    const tool = guidesTool(spy as unknown as (p: string, q?: unknown) => unknown)
+    await tool.handler({ q: 'editor testing' }, {})
+    expect(spy).toHaveBeenCalledWith('/api/v1/docs/search', { k: 5, q: 'editor testing', scope: 'guides' })
+  })
 })
