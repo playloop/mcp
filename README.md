@@ -182,7 +182,7 @@ All tools below hit `/api/v1/*` with your management key. They work on every pla
 |---|---|
 | `search_everything` | Full-text search across your sessions, games, insights, and events. |
 | `search_docs` | Semantic search over the Playloop documentation (SDKs, dashboard, billing, connections, security) for grounding how-to answers. |
-| `search_guides` | Answer "how do I..." questions from Playloop's public how-to guides and SDK READMEs. Never returns your game data, pricing, or legal pages. |
+| `search_guides` | Answer "how do I..." questions from Playloop's public how-to guides and SDK READMEs. Never returns your game data; the pricing and legal pages stay out. |
 
 **Game analytics**
 

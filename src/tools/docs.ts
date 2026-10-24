@@ -65,7 +65,7 @@ export function registerDocsTools(server: McpServer, client: PlayloopClient): vo
       title: 'Search Playloop guides',
       annotations: READ_ONLY_TOOL_ANNOTATIONS,
       description:
-        "Answer 'how do I...' questions from Playloop's public how-to guides and SDK READMEs (wiring the SDK, tracking events, running experiments, reading playtests). Never returns your game data, pricing, or legal pages. Read-only. Returns `{ results }`, each with its source, title, url, and passage.",
+        "Answer 'how do I...' questions from Playloop's public how-to guides and SDK READMEs (wiring the SDK, tracking events, running experiments, reading playtests). Never returns your game data; the pricing and legal pages stay out. Read-only. Returns `{ results }`, each with its source, title, url, and passage.",
       inputSchema: docsSearchInput('The question, for example "how do I track player deaths?".'),
     },
     docsSearchHandler(client, 'guides'),
