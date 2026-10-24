@@ -16,6 +16,9 @@ import {
   registerTesterSpotlightPrompt,
   testerSpotlightText,
 } from '../src/prompts/tester-spotlight.js'
+import { registerRecipePrompts } from '../src/prompts/recipes.js'
+import { PROMPT_RECIPES } from '../src/prompts/recipes.generated.js'
+import { createPlayloopMcpServer } from '../src/server.js'
 
 interface PromptResult {
   messages: Array<{ role: 'user' | 'assistant'; content: { type: 'text'; text: string } }>
@@ -134,5 +137,57 @@ describe('prompt: tester_spotlight', () => {
 
   it('text helper renders', () => {
     expect(testerSpotlightText('foo')).toContain('foo')
+  })
+})
+
+describe('recipe prompts', () => {
+  function recipes() {
+    const server = new McpServer({ name: 'test', version: '0.0.0' })
+    registerRecipePrompts(server)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (server as unknown as { _registeredPrompts: Record<string, any> })._registeredPrompts
+  }
+
+  it('registers one prompt per generated recipe', () => {
+    expect(Object.keys(recipes()).sort()).toEqual(PROMPT_RECIPES.map((r) => r.name).sort())
+  })
+
+  it('fills the arguments into a single user message', async () => {
+    const out = (await recipes()['read_last_build_quits'].callback({ game: 'dungeon-crawl' }, {})) as PromptResult
+    expect(out.messages).toHaveLength(1)
+    expect(out.messages[0]?.role).toBe('user')
+    expect(out.messages[0]?.content.text).toContain('game="dungeon-crawl"')
+    expect(out.messages[0]?.content.text).toContain('get_build_drop_reasons')
+    expect(out.messages[0]?.content.text).not.toContain('{{')
+  })
+
+  it('declares each argument as required', () => {
+    const ab = recipes()['set_up_ab_test']
+    expect(ab.argsSchema.safeParse({ game: 'g' }).success).toBe(false)
+    expect(ab.argsSchema.safeParse({ game: 'g', change: 'a shorter tutorial' }).success).toBe(true)
+  })
+
+  it('a recipe with no arguments renders without any', async () => {
+    const out = (await recipes()['add_death_tracking'].callback({})) as PromptResult
+    expect(out.messages[0]?.content.text).toContain("telemetry.track('player_died'")
+  })
+
+  it('read-only mode skips a recipe whose write tool would only refuse', () => {
+    const server = createPlayloopMcpServer({ apiKey: 'k', readOnly: true })
+    const names = Object.keys(
+      (server as unknown as { _registeredPrompts: Record<string, unknown> })._registeredPrompts,
+    )
+    expect(names).not.toContain('set_up_ab_test')
+    expect(names).toContain('read_last_build_quits')
+  })
+
+  it('every tool a recipe names is a tool this server registers', () => {
+    const server = createPlayloopMcpServer({ apiKey: 'k' })
+    const tools = Object.keys(
+      (server as unknown as { _registeredTools: Record<string, unknown> })._registeredTools,
+    )
+    for (const recipe of PROMPT_RECIPES) {
+      for (const tool of recipe.tools) expect(tools, `${recipe.name} names ${tool}`).toContain(tool)
+    }
   })
 })

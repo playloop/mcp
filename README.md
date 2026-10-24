@@ -182,6 +182,7 @@ All tools below hit `/api/v1/*` with your management key. They work on every pla
 |---|---|
 | `search_everything` | Full-text search across your sessions, games, insights, and events. |
 | `search_docs` | Semantic search over the Playloop documentation (SDKs, dashboard, billing, connections, security) for grounding how-to answers. |
+| `search_guides` | Answer "how do I..." questions from Playloop's public how-to guides and SDK READMEs. Never returns your game data; the pricing and legal pages stay out. |
 
 **Game analytics**
 
@@ -229,7 +230,7 @@ The server also registers MCP **resources**: URI-template wrappers so an agent c
 
 Resources resolve through the same `/api/v1/*` routes as tools. Authentication requirements are identical: management key required, ingest keys rejected with 403. Filters (env, build, etc.) belong to tool calls, not resource URIs, since resources are meant to be stable references.
 
-## Prompts (pre-canned templates)
+## Prompts
 
 | Prompt | What it asks the agent to do |
 |---|---|
@@ -237,6 +238,12 @@ Resources resolve through the same `/api/v1/*` routes as tools. Authentication r
 | `build_comparison` | Compare two builds (improvements + regressions). |
 | `friction_analysis` | Find recurring friction at game / build / tester scope. |
 | `tester_spotlight` | Identify and report on top-engaged testers. |
+| `add_death_tracking` | Wire a death event with its cause into a TypeScript game, then check it arrived. |
+| `read_last_build_quits` | Read why players quit the newest build and pick the one fix to make first. |
+| `set_up_ab_test` | Draft an experiment for one change, wire the variant, start it when the build is ready. |
+| `how_do_i` | Answer a how-do-I question from the public Playloop guides, with the page each step came from. |
+
+The last four are recipes, generated from Playloop's prompt source files. In Claude Code every prompt shows up as a slash command once the server is connected.
 
 ## CLI
 
