@@ -34,7 +34,7 @@ function docsSearchInput(qDescription: string) {
 /**
  * A forced `scope` is written after the caller's args, so a caller can never
  * override it. The guides tool also sends its documented default `k` itself,
- * because the API reads a missing `k` as 1.
+ * so it gets 5 even from an API deployment that reads a missing `k` as 1.
  */
 function docsSearchHandler(client: PlayloopClient, forced?: { scope: 'guides'; defaultK: number }) {
   return async (args: Record<string, unknown>) => {
